@@ -17,7 +17,7 @@ Internet -> cloudflared --(tunnel net)--> auth-proxy (nginx) --(home-services ne
 
 ## Quick start
 
-1. Set up Entra ID and Cloudflare: [docs/entra-id-setup.md](docs/entra-id-setup.md)
+1. Set up Entra ID ([docs/entra-id-setup.md](docs/entra-id-setup.md)) and the Cloudflare tunnel ([docs/cloudflare-tunnel-setup.md](docs/cloudflare-tunnel-setup.md))
 2. `cp .env.example .env` and fill it in.
 3. Edit `config/hosts.conf`.
 4. `docker compose up -d --build`
@@ -42,6 +42,6 @@ networks:
 myapp.example.com   myapp:8080
 ```
 
-Also add `myapp.example.com` as a public hostname in the Cloudflare tunnel (or use a wildcard). Domains must be subdomains of `COOKIE_DOMAIN`.
+Also route `myapp.example.com` through the Cloudflare tunnel (or use a wildcard); see [docs/cloudflare-tunnel-setup.md](docs/cloudflare-tunnel-setup.md#adding-services-after-auth-works). Domains must be subdomains of `COOKIE_DOMAIN`.
 
 Services receive the user in the `X-Auth-Request-User` and `X-Auth-Request-Email` headers. They should not publish ports, so the proxy stays the only way in.

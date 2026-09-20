@@ -70,9 +70,7 @@ Everyone else gets an Entra error page instead of reaching your services. Option
 
 ## 7. Cloudflare tunnel
 
-1. In Cloudflare Zero Trust go to **Networks > Tunnels**, create a tunnel, and copy its token into `CLOUD_FLARE_TUNNEL_TOKEN`.
-2. Add a **public hostname** for each domain you use, including `auth.example.com`, with service type **HTTP** and URL `auth-proxy:80`.
-   - For a catch-all, use `*.example.com`. The dashboard does not create DNS for wildcards, so add a proxied CNAME record `*` pointing to `<tunnel-id>.cfargotunnel.com` yourself.
+Set up the tunnel following [cloudflare-tunnel-setup.md](cloudflare-tunnel-setup.md). Do that before the next step.
 
 ## 8. Start and test
 
@@ -82,6 +80,29 @@ cd example-service && docker compose up -d
 ```
 
 Open `https://hello.example.com`. You should be redirected to Microsoft, sign in, and land on the whoami page, which shows an `X-Auth-Request-Email` header with your address.
+
+The whoami page prints general info first (`Hostname: ...`, `IP: ...`) and then the request headers. Scroll down to the headers. On success they include your identity:
+
+```
+Hostname: 3f2a9c1d7b44
+IP: 127.0.0.1
+IP: 172.20.0.5
+RemoteAddr: 172.20.0.4:53712
+GET / HTTP/1.1
+Host: hello.example.com
+User-Agent: Mozilla/5.0 ...
+X-Auth-Request-Email: you@yourcompany.com
+X-Auth-Request-User: 7c1e...-a3b2
+X-Forwarded-Email: you@yourcompany.com
+X-Forwarded-Host: hello.example.com
+X-Forwarded-Proto: https
+X-Forwarded-User: 7c1e...-a3b2
+X-Real-Ip: 172.20.0.4
+```
+
+The exact values differ (the user is an ID from Entra). If the `X-Auth-Request-*` lines are missing or empty, you reached the service without going through the login, or the e-mail claim is missing (see step 4).
+
+Adding more services is described in [cloudflare-tunnel-setup.md](cloudflare-tunnel-setup.md#adding-services-after-auth-works).
 
 Backends receive the identity in `X-Auth-Request-User`/`X-Auth-Request-Email` (also as `X-Forwarded-User`/`X-Forwarded-Email`). Users can sign out at `https://<any-domain>/oauth2/sign_out`.
 
