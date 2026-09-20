@@ -1,0 +1,19 @@
+# Example service protected by the auth proxy.
+#
+# 1. Start the main stack first (it creates the "home-services" network).
+# 2. docker compose up -d   (in this folder)
+# 3. Add "hello.example.com  hello-world:80" to config/hosts.conf.
+#
+# The service publishes no ports: it is only reachable through the proxy.
+# whoami echoes the request headers, including X-Auth-Request-Email.
+services:
+  hello-world:
+    image: traefik/whoami:latest
+    restart: unless-stopped
+    networks:
+      - services
+
+networks:
+  services:
+    name: home-services
+    external: true
