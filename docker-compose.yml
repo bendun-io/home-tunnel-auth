@@ -35,7 +35,10 @@ services:
       OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_COOKIE_SECRET:?set OAUTH2_COOKIE_SECRET in .env}
       OAUTH2_PROXY_REDIRECT_URL: https://${AUTH_DOMAIN:?set AUTH_DOMAIN in .env}/oauth2/callback
       OAUTH2_PROXY_COOKIE_DOMAINS: ${COOKIE_DOMAIN:?set COOKIE_DOMAIN in .env}
-      OAUTH2_PROXY_WHITELIST_DOMAINS: ${COOKIE_DOMAIN}
+      # Domains the post-login redirect (rd) may point to. Listing the value both
+      # with and without a leading dot makes this work whichever way COOKIE_DOMAIN
+      # is written; a rejected rd silently falls back to "/" on the auth domain.
+      OAUTH2_PROXY_WHITELIST_DOMAINS: ${COOKIE_DOMAIN},.${COOKIE_DOMAIN}
       OAUTH2_PROXY_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-*}
       OAUTH2_PROXY_SCOPE: openid email profile
       OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
